@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -11,17 +12,40 @@ namespace Summative_assignment
         private SpriteBatch _spriteBatch;
 
 
-        Texture2D supermanTexture, skyTexture, kryptoniteTexture;
+        Texture2D supermanTexture, skyTexture, kryptoniteTexture, supermanIntrotexture, endTexture, gameOvertexture;
 
         Rectangle window;
         Rectangle supermanRect;
+        Rectangle gameOverRect;
+
+        SpriteFont introFont;
+        SpriteFont gameFont;
+        SpriteFont endFont;
+        
+        
 
         SpriteEffects supermanEffect;
 
         Vector2 supermanSpeed;
+        Vector2 cursorPosition;
+
+        MouseState mouseState;
+
+        bool dead;
+
+
+        enum Screen
+        {
+            Intro,
+            supermanGame,
+            End
+        }
+        Screen screen;
 
 
         Random generator = new Random();
+
+        
 
         public Game1()
         {
@@ -40,10 +64,16 @@ namespace Summative_assignment
             _graphics.ApplyChanges();
 
             supermanRect = new Rectangle(300, 10, 200, 100);
+            gameOverRect = new Rectangle(300, 10, 400, 200);
+           
 
 
-            supermanSpeed = new Vector2(6, generator.Next(-2, 3));
+            supermanSpeed = new Vector2(10, 7);
 
+            
+            dead = false;
+
+            screen = Screen.Intro;
 
 
             base.Initialize();
@@ -56,6 +86,9 @@ namespace Summative_assignment
             supermanTexture = Content.Load<Texture2D>("supermanFlying");
             kryptoniteTexture = Content.Load<Texture2D>("kryptonite");
             skyTexture = Content.Load<Texture2D>("sky2");
+            supermanIntrotexture = Content.Load<Texture2D>("lexCorp");
+            gameOvertexture = Content.Load<Texture2D>("gameOver");
+            introFont = Content.Load<SpriteFont>("Intro");
 
 
            
@@ -71,25 +104,74 @@ namespace Summative_assignment
             // TODO: Add your update logic here
 
 
-            supermanRect.X += (int)supermanSpeed.X;
-            if (supermanRect.Left > window.Width)
+
+            mouseState = Mouse.GetState();
+            cursorPosition = new Vector2(mouseState.X, mouseState.Y);
+            if (screen == Screen.Intro)
             {
                 
-                supermanRect.X = -supermanRect.Width;
+                if (mouseState.RightButton == ButtonState.Pressed)
+                {
+                    screen = Screen.supermanGame;
+                    
+
+                }
 
 
             }
-           
+
+
+            else if ( screen == Screen.supermanGame)
+            {
+                supermanRect.X += (int)supermanSpeed.X;
+                if (supermanRect.Left > window.Width)
+                {
+
+                    supermanRect.X = -supermanRect.Width;
+                    supermanSpeed = new Vector2(generator.Next(6, 11), generator.Next(6, 11));
+
+
+                }
+
 
                 supermanRect.Y += (int)supermanSpeed.Y;
 
-            if (supermanRect.Top > window.Height)
-            {
+                if (supermanRect.Top > window.Height)
+                {
 
-                supermanRect.Y = -supermanRect.Height;
+                    supermanRect.Y = -supermanRect.Height;
+                    supermanSpeed = new Vector2(generator.Next(6, 11), generator.Next(6, 11));
 
 
+                }
+
+
+                if (dead == true)
+                {
+
+                    supermanEffect = SpriteEffects.FlipVertically;
+                    supermanSpeed = new Vector2(0, 3);
+                    if (supermanRect.Bottom > window.Height)
+                    {
+                        supermanSpeed = new Vector2(0, 0);
+                        
+
+                    }
+
+
+
+
+
+                }
+
+                if (mouseState.LeftButton == ButtonState.Pressed && supermanRect.Intersects(new Rectangle(mouseState.X, mouseState.Y, kryptoniteTexture.Width, kryptoniteTexture.Height)))
+                {
+
+                    dead = true;
+
+                }
             }
+                
 
 
 
@@ -104,10 +186,29 @@ namespace Summative_assignment
 
             _spriteBatch.Begin();
 
+            if (screen == Screen.Intro)
+            {
+                _spriteBatch.Draw(supermanIntrotexture, new Rectangle(0, 0, 800, 600), Color.White);
+                _spriteBatch.DrawString(introFont, "Welcome to LexCorp! Today your task is to KILL Superman! Click left on him to poison!" +
+                    "Click ENTER to begin", new Vector2(100, 500), Color.Green);
 
-            _spriteBatch.Draw(skyTexture, window, Color.White);
-            _spriteBatch.Draw(supermanTexture, supermanRect, null, Color.White, 0f, Vector2.Zero, supermanEffect, 1f);
 
+            }
+            else if (screen == Screen.supermanGame)
+            {
+                _spriteBatch.Draw(skyTexture, window, Color.White);
+                _spriteBatch.Draw(supermanTexture, supermanRect, null, Color.White, 0f, Vector2.Zero, supermanEffect, 1f);
+                _spriteBatch.Draw(kryptoniteTexture, cursorPosition, Color.White);
+
+                if ( supermanSpeed == Vector2.Zero)
+                {
+                    _spriteBatch.Draw(gameOvertexture, gameOverRect, Color.White);
+                }
+                
+            }
+
+
+               
 
 
 
