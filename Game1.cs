@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Transactions;
 
 namespace Summative_assignment
 {
@@ -12,14 +13,17 @@ namespace Summative_assignment
         private SpriteBatch _spriteBatch;
 
 
-        Texture2D supermanTexture, skyTexture, kryptoniteTexture, supermanIntrotexture, endTexture, gameOvertexture;
+        Texture2D supermanTexture, skyTexture, kryptoniteTexture, supermanIntrotexture, endTexture, gameOvertexture, nextTexture, lexLuthorTexture, textboxTexture;
 
         Rectangle window;
         Rectangle supermanRect;
         Rectangle gameOverRect;
+        Rectangle nextRect;
+        Rectangle lexRect;
+        Rectangle textRect;
 
         SpriteFont introFont;
-        SpriteFont gameFont;
+        
         SpriteFont endFont;
         
         
@@ -30,6 +34,8 @@ namespace Summative_assignment
         Vector2 cursorPosition;
 
         MouseState mouseState;
+        KeyboardState currentKeyState;
+        KeyboardState previousKeyState;
 
         bool dead;
 
@@ -65,6 +71,9 @@ namespace Summative_assignment
 
             supermanRect = new Rectangle(300, 10, 200, 100);
             gameOverRect = new Rectangle(300, 10, 400, 200);
+            nextRect = new Rectangle(320, 250, 200, 100);
+            lexRect = new Rectangle(0, 200, 400, 500);
+            textRect = new Rectangle(200,50, 200, 200);
            
 
 
@@ -86,9 +95,16 @@ namespace Summative_assignment
             supermanTexture = Content.Load<Texture2D>("supermanFlying");
             kryptoniteTexture = Content.Load<Texture2D>("kryptonite");
             skyTexture = Content.Load<Texture2D>("sky2");
+            nextTexture = Content.Load<Texture2D>("Next");
+            endTexture = Content.Load<Texture2D>("pixel");
+            lexLuthorTexture = Content.Load<Texture2D>("lexLuthor");
+            textboxTexture = Content.Load<Texture2D>("Textbox");
+
             supermanIntrotexture = Content.Load<Texture2D>("lexCorp");
             gameOvertexture = Content.Load<Texture2D>("gameOver");
             introFont = Content.Load<SpriteFont>("Intro");
+            endFont = Content.Load<SpriteFont>("End");
+            
 
 
            
@@ -104,6 +120,12 @@ namespace Summative_assignment
             // TODO: Add your update logic here
 
 
+            currentKeyState = Keyboard.GetState();
+            if (screen == Screen.End)
+            {
+                if (currentKeyState.IsKeyDown(Keys.Enter) && previousKeyState.IsKeyUp(Keys.Enter))
+                    Exit();
+            }
 
             mouseState = Mouse.GetState();
             cursorPosition = new Vector2(mouseState.X, mouseState.Y);
@@ -116,6 +138,7 @@ namespace Summative_assignment
                     
 
                 }
+               
 
 
             }
@@ -123,6 +146,11 @@ namespace Summative_assignment
 
             else if ( screen == Screen.supermanGame)
             {
+
+                
+
+
+
                 supermanRect.X += (int)supermanSpeed.X;
                 if (supermanRect.Left > window.Width)
                 {
@@ -157,6 +185,8 @@ namespace Summative_assignment
                         
 
                     }
+                    
+
 
 
 
@@ -170,6 +200,17 @@ namespace Summative_assignment
                     dead = true;
 
                 }
+
+                if (mouseState.LeftButton == ButtonState.Pressed && nextRect.Contains(mouseState.Position))
+                {
+                    screen = Screen.End;
+                    
+                }
+
+
+                
+
+
             }
                 
 
@@ -189,10 +230,9 @@ namespace Summative_assignment
             if (screen == Screen.Intro)
             {
                 _spriteBatch.Draw(supermanIntrotexture, new Rectangle(0, 0, 800, 600), Color.White);
-                _spriteBatch.DrawString(introFont, "Welcome to LexCorp! Today your task is to KILL Superman! Click left on him to poison!" +
-                    "Click ENTER to begin", new Vector2(100, 500), Color.Green);
-
-
+                _spriteBatch.DrawString(introFont, "Welcome to LexCorp! Today your task is to KILL Superman!", new Vector2(0, 0), Color.Green);
+                _spriteBatch.DrawString(introFont, "Left click on him with the Kryptonite to poison him!", new Vector2(0, 25), Color.Green);
+                _spriteBatch.DrawString(introFont, "Right Click to Move on.", new Vector2(0, 40), Color.Green);
             }
             else if (screen == Screen.supermanGame)
             {
@@ -203,17 +243,33 @@ namespace Summative_assignment
                 if ( supermanSpeed == Vector2.Zero)
                 {
                     _spriteBatch.Draw(gameOvertexture, gameOverRect, Color.White);
+                    _spriteBatch.Draw(nextTexture, nextRect, Color.White);
+                    
                 }
+                
                 
             }
 
+            else if (screen == Screen.End)
+            {
+                _spriteBatch.Draw (endTexture, window, Color.White );
+                _spriteBatch.Draw (lexLuthorTexture, lexRect, Color.White);
+                _spriteBatch.DrawString(endFont, "Congrats! Your first ", new Vector2(210, 65), Color.Black);
+                _spriteBatch.DrawString(endFont, "mission with LexCorp ", new Vector2(210, 85), Color.Black);
+                _spriteBatch.DrawString(endFont, " is complete!", new Vector2(210, 105), Color.Black);
+                _spriteBatch.DrawString(endFont, "Hit ENTER to end.", new Vector2(210, 125), Color.Black);
 
-               
+                _spriteBatch.Draw (textboxTexture, textRect, Color.White);
+
+            }
 
 
 
 
-            _spriteBatch.End();
+
+
+
+                _spriteBatch.End();
 
 
             base.Draw(gameTime);
