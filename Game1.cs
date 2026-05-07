@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Transactions;
 
@@ -25,8 +26,9 @@ namespace Summative_assignment
         SpriteFont introFont;
         
         SpriteFont endFont;
-        
-        
+
+        Song supermanTheme;
+        SoundEffect lexTheme;
 
         SpriteEffects supermanEffect;
 
@@ -86,6 +88,7 @@ namespace Summative_assignment
 
 
             base.Initialize();
+            MediaPlayer.Play(supermanTheme);
         }
 
         protected override void LoadContent()
@@ -104,6 +107,9 @@ namespace Summative_assignment
             gameOvertexture = Content.Load<Texture2D>("gameOver");
             introFont = Content.Load<SpriteFont>("Intro");
             endFont = Content.Load<SpriteFont>("End");
+
+            supermanTheme = Content.Load<Song>("Superman");
+            lexTheme = Content.Load<SoundEffect>("Congrats");
             
 
 
@@ -204,6 +210,8 @@ namespace Summative_assignment
                 if (mouseState.LeftButton == ButtonState.Pressed && nextRect.Contains(mouseState.Position))
                 {
                     screen = Screen.End;
+                    MediaPlayer.Stop();
+                    lexTheme.Play();
                     
                 }
 
@@ -231,8 +239,8 @@ namespace Summative_assignment
             {
                 _spriteBatch.Draw(supermanIntrotexture, new Rectangle(0, 0, 800, 600), Color.White);
                 _spriteBatch.DrawString(introFont, "Welcome to LexCorp! Today your task is to KILL Superman!", new Vector2(0, 0), Color.Green);
-                _spriteBatch.DrawString(introFont, "Left click on him with the Kryptonite to poison him!", new Vector2(0, 25), Color.Green);
-                _spriteBatch.DrawString(introFont, "Right Click to Move on.", new Vector2(0, 40), Color.Green);
+                _spriteBatch.DrawString(introFont, "Left click on him with the Kryptonite to poison him!", new Vector2(0, 35), Color.Green);
+                _spriteBatch.DrawString(introFont, "Right Click to Move on.", new Vector2(0, 70), Color.Green);
             }
             else if (screen == Screen.supermanGame)
             {
@@ -254,6 +262,7 @@ namespace Summative_assignment
             {
                 _spriteBatch.Draw (endTexture, window, Color.White );
                 _spriteBatch.Draw (lexLuthorTexture, lexRect, Color.White);
+                
                 _spriteBatch.DrawString(endFont, "Congrats! Your first ", new Vector2(210, 65), Color.Black);
                 _spriteBatch.DrawString(endFont, "mission with LexCorp ", new Vector2(210, 85), Color.Black);
                 _spriteBatch.DrawString(endFont, " is complete!", new Vector2(210, 105), Color.Black);

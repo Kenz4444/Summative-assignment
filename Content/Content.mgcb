@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Congrats.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Congrats.mp3
+
 #begin End.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -117,6 +123,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:sky2.jpg
+
+#begin Superman.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Superman.mp3
 
 #begin supermanFlying.png
 /importer:TextureImporter
